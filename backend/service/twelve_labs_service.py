@@ -128,7 +128,7 @@ if __name__ == "__main__":
     index_id = index.get('_id')
     all_tasks = service.list_tasks()
     path_to_video = "example.mp4"
-    task_id = "65ac4a94627beda40b8dfb0d"
+    task_id = "65ac4f63627beda40b8dfb13"
     # response = service.upload_video(index_id, path_to_video, path_to_video)
     # task_id = response.get('task_id')
     # pprint(response)

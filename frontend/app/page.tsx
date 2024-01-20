@@ -21,7 +21,7 @@ import {
   generateChapter,
   generateHighlight,
 } from "@/app/api/generate";
-
+import Draggable from "react-draggable";
 export default function Home() {
   const [videoDetails, setVideoDetails] = useState<Video>();
   const [videoLoading, setVideoLoading] = useState(false);
@@ -32,20 +32,20 @@ export default function Home() {
     useState<HighlightResponse>();
   const playerRef = useRef<ReactPlayer>(null);
 
-  // useEffect(() => {
-  //   if (!videoDetails) {
-  //     const videoID = "65ac419e4981af6e637c8e7c";
-  //     const indexID = "65a91ba0627beda40b8df9b1";
-  //     console.log("Fetching video details...");
-  //     setVideoLoading(true);
-  //     getVideo(indexID, videoID)
-  //       .then((video) => {
-  //         setVideoDetails(video);
-  //       })
-  //       .catch((error) => console.error("Error fetching video details:", error))
-  //       .finally(() => setVideoLoading(false));
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!videoDetails) {
+      const videoID = "65ac4f634981af6e637c8e7f";
+      const indexID = "65a91ba0627beda40b8df9b1";
+      console.log("Fetching video details...");
+      setVideoLoading(true);
+      getVideo(indexID, videoID)
+        .then((video) => {
+          setVideoDetails(video);
+        })
+        .catch((error) => console.error("Error fetching video details:", error))
+        .finally(() => setVideoLoading(false));
+    }
+  }, []);
 
   useEffect(() => {
     if (videoDetails) {
@@ -101,7 +101,7 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center p-24 space-y-4">
         <div className="flex flex-col items-center justify-center w-3/4  mx-auto">
           <InputFile
-            onVideoReady={handleVideoReady}
+            setVideoDetails={handleVideoReady}
             setLoading={setVideoLoading}
           />
         </div>
@@ -110,8 +110,8 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-start justify-center p-24 space-y-4">
-      <div className="player-wrapper w-3/4 flex justify-center mx-auto">
+    <main className="flex min-h-screen flex-col justify-center space-y-4 ">
+      <div className="player-wrapper flex justify-center items-start mx-auto mt-6 w-3/4">
         <ReactPlayer
           ref={playerRef}
           url={videoDetails.hls.video_url}
@@ -122,17 +122,15 @@ export default function Home() {
         />
       </div>
       <div>
-        {gistResponse && (
-          <>
-            <h1 className="text-3xl font-bold text-left mb-6 w-3/4  mx-auto">
-              {gistResponse.title}
-            </h1>
-            <div className="topics flex flex-wrap justify-left mb-6 w-3/4  mx-auto">
+        {gistResponse ? (
+          <div className="gist w-3/4 mb-6 mx-auto">
+            <h1 className="text-3xl font-bold mb-6 ">{gistResponse.title}</h1>
+            <div className="topics flex flex-wrap justify-left mb-6 ">
               {gistResponse.topics.map((topic, index) => (
                 <span key={index}>{topic}</span>
               ))}
             </div>
-            <div className="hashtags flex flex-wrap justify-left w-3/4  mx-auto">
+            <div className="hashtags flex flex-wrap justify-left">
               {gistResponse.hashtags.map((hashtag, index) => (
                 <span
                   key={index}
@@ -142,18 +140,20 @@ export default function Home() {
                 </span>
               ))}
             </div>
-          </>
+          </div>
+        ) : (
+          <TextSkeleton />
         )}
       </div>
       {summaryResponse ? (
-        <p className="text-left mb-6 w-3/4  mx-auto">
+        <p className="text-left mb-6 w-3/4 mx-auto">
           {summaryResponse.summary}
         </p>
       ) : (
         <TextSkeleton />
       )}
       {chapterResponse ? (
-        <div className="chapters w-3/4 mb-6  mx-auto">
+        <div className="chapters w-3/4 mb-6 mx-auto">
           <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
           {chapterResponse.chapters.map((chapter, index) => (
             <div
@@ -175,7 +175,7 @@ export default function Home() {
         <TextSkeleton />
       )}
       {highlightResponse ? (
-        <div className="highlights w-3/4 mb-6  mx-auto">
+        <div className="highlights w-3/4 mb-6 mx-auto">
           <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
           {highlightResponse.highlights.map((highlight, index) => (
             <div

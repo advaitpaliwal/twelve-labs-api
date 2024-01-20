@@ -11,11 +11,11 @@ import { getVideo } from "@/app/api/video";
 import { Video } from "@/types/video";
 
 interface InputFileProps {
-  onVideoReady: (videoDetails: Video) => void;
+  setVideoDetails: (videoDetails: Video) => void;
   setLoading: (loading: boolean) => void;
 }
 
-export function InputFile({ onVideoReady, setLoading }: InputFileProps) {
+export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (
@@ -47,14 +47,14 @@ export function InputFile({ onVideoReady, setLoading }: InputFileProps) {
             taskStatus.index_id,
             taskStatus.video_id
           );
-          onVideoReady(videoDetails);
+          setVideoDetails(videoDetails);
           setLoading(false);
         }
       } catch (error) {
         console.error("Error checking task status:", error);
         clearInterval(intervalId);
       }
-    }, 10000);
+    }, 15000);
   };
 
   return (
