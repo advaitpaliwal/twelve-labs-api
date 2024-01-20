@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException
 from service import TwelveLabsService
 from models.generate_request import GenerateRequest
 
-generate_router = APIRouter()
+router = APIRouter()
 service = TwelveLabsService()
 
-@generate_router.post("/generate/")
+@router.post("/generate/")
 async def generate_content(request: GenerateRequest):
     try:
         if request.type == "gist":

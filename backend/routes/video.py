@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException
 from service import TwelveLabsService
 from models.video_model import VideoRequest
 
-video_router = APIRouter()
+router = APIRouter()
 service = TwelveLabsService()
 
-@video_router.get("/video/")
+@router.get("/")
 async def get_video_info(request: VideoRequest):
     try:
         return service.get_video(request.index_id, request.video_id)

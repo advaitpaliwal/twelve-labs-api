@@ -3,21 +3,8 @@
 import React, { useRef } from "react";
 import { InputFile } from "@/components/ui/upload";
 import ReactPlayer from "react-player";
-import { secondsToTimestamp } from "@/utils/timestamp";
-interface Chapter {
-  chapter_number: number;
-  chapter_summary: string;
-  chapter_title: string;
-  end: number;
-  start: number;
-}
-
-interface Highlight {
-  end: number;
-  highlight: string;
-  highlight_summary: string;
-  start: number;
-}
+import { secondsToTimestamp } from "@/lib/timestamp";
+import { Chapter, Highlight } from "@/lib/types";
 
 export default function Home() {
   const videoUrl =
@@ -94,9 +81,11 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-center p-24 space-y-4">
-      <InputFile />
-      <div className="player-wrapper w-full flex justify-center">
-        {" "}
+      <div className="flex flex-col items-center justify-center w-3/4  mx-auto">
+        <InputFile />
+      </div>
+
+      <div className="player-wrapper w-3/4 flex justify-center mx-auto">
         <ReactPlayer
           ref={playerRef}
           url={videoUrl}
@@ -107,14 +96,12 @@ export default function Home() {
         />
       </div>
 
-      <h1 className="text-3xl font-bold text-left mb-6">
-        {" "}
+      <h1 className="text-3xl font-bold text-left mb-6 w-3/4  mx-auto">
         Exploring the World of Interactive Internet Browsing: A Guide to VPNs,
         Tailwagging, and Exciting Discoveries
       </h1>
 
-      <div className="hashtags flex flex-wrap justify-center mb-6">
-        {" "}
+      <div className="hashtags flex flex-wrap justify-left mb-6 w-3/4  mx-auto">
         {[
           "man in black attire",
           "laptop",
@@ -136,13 +123,12 @@ export default function Home() {
         ))}
       </div>
 
-      <p className="text-left mb-6 w-full">
-        {" "}
+      <p className="text-left mb-6 w-3/4  mx-auto">
         In this captivating video, we follow a man dressed in black as he delves
         into the mesmerizing world of interactive internet browsing...
       </p>
 
-      <div className="chapters w-full mb-6">
+      <div className="chapters w-3/4 mb-6  mx-auto">
         <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
         {chapters.map((chapter, index) => (
           <div
@@ -153,8 +139,8 @@ export default function Home() {
             <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
             <h3 className="text-lg font-bold"></h3>
             <p className="text-sm text-gray-600">
-              Chapter {chapter.chapter_number} -{" "}
-              {secondsToTimestamp(chapter.start)} to{" "}
+              Chapter {chapter.chapter_number} -
+              {secondsToTimestamp(chapter.start)} to
               {secondsToTimestamp(chapter.end)}
             </p>
             <p>{chapter.chapter_summary}</p>
@@ -162,7 +148,7 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="highlights w-full mb-6">
+      <div className="highlights w-3/4 mb-6  mx-auto">
         <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
         {highlights.map((highlight, index) => (
           <div
@@ -172,7 +158,7 @@ export default function Home() {
           >
             <p className="text-lg text-gray-900">{highlight.highlight}</p>
             <p className="text-sm text-gray-600">
-              {secondsToTimestamp(highlight.start)} to{" "}
+              {secondsToTimestamp(highlight.start)} to
               {secondsToTimestamp(highlight.end)}
             </p>
             <p className="text-sm text-gray-600">
