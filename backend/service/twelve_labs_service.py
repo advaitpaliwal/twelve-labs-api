@@ -62,7 +62,6 @@ class TwelveLabsService:
         return response.json()
 
     def check_video_indexing_status(self, task_id: str):
-        #status ready means the video is ready to be used for generating
         task_status_url = f"{self.TASKS_URL}/{task_id}"
         response = requests.get(task_status_url, headers=self.HEADERS)
         return response.json()
@@ -128,24 +127,24 @@ if __name__ == "__main__":
     index = service.get_or_create_index("takehome")
     index_id = index.get('_id')
     all_tasks = service.list_tasks()
-    pprint(all_tasks)
     path_to_video = "example.mp4"
-    task_id = "65a91eff627beda40b8df9b4"
+    task_id = "65ac4a94627beda40b8dfb0d"
     # response = service.upload_video(index_id, path_to_video, path_to_video)
     # task_id = response.get('task_id')
     # pprint(response)
     response = service.check_video_indexing_status(task_id)
-    video_id = response.get('video_id')
-    print(f"VIDEO ID: {video_id}")
     pprint(response)
+    video_id = response.get('video_id')
+    # print(f"VIDEO ID: {video_id}")
+    # # pprint(response)
     response = service.get_video(index_id, video_id)
     pprint(response)
 
-    response = service.generate_gist(video_id)
-    pprint(response)
-    response = service.generate_summary(video_id)
-    pprint(response)
-    response = service.generate_chapter(video_id)
-    pprint(response)
-    response = service.generate_highlight(video_id)
-    pprint(response)
+    # response = service.generate_gist(video_id)
+    # pprint(response)
+    # response = service.generate_summary(video_id)
+    # pprint(response)
+    # response = service.generate_chapter(video_id)
+    # pprint(response)
+    # response = service.generate_highlight(video_id)
+    # pprint(response)

@@ -1,77 +1,86 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { InputFile } from "@/components/ui/upload";
 import ReactPlayer from "react-player";
-import { secondsToTimestamp } from "@/lib/timestamp";
-import { Chapter, Highlight } from "@/lib/types";
+import { secondsToTimestamp } from "@/lib/utils";
+import { Video } from "@/types/video";
+import {
+  GistResponse,
+  SummaryResponse,
+  ChapterResponse,
+  HighlightResponse,
+} from "@/types/generate";
+import { getVideo } from "@/app/api/video";
+import { TextSkeleton } from "@/components/ui/textSkeleton";
+import Image from "next/image";
+import HorseLoading from "@/public/horse_loading.gif";
+import {
+  generateGist,
+  generateSummary,
+  generateChapter,
+  generateHighlight,
+} from "@/app/api/generate";
 
 export default function Home() {
-  const videoUrl =
-    "https://deuqpmn4rs7j5.cloudfront.net/658b1f079bbca19fea568a74/65a91eff627beda40b8df9b4/stream/3ab04d93-71bf-4244-9e6b-e280855386d5.m3u8";
+  const [videoDetails, setVideoDetails] = useState<Video>();
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [gistResponse, setGistResponse] = useState<GistResponse>();
+  const [summaryResponse, setSummaryResponse] = useState<SummaryResponse>();
+  const [chapterResponse, setChapterResponse] = useState<ChapterResponse>();
+  const [highlightResponse, setHighlightResponse] =
+    useState<HighlightResponse>();
   const playerRef = useRef<ReactPlayer>(null);
 
-  const chapters: Chapter[] = [
-    {
-      chapter_number: 0,
-      chapter_summary:
-        "In this chapter, we are introduced to a man in black attire who uses a laptop to browse various websites. He explores the world of interactive internet browsing, showcasing the potential of software tools like VPNs and Tailwagging.",
-      chapter_title: "Introduction to Interactive Internet Browsing",
-      end: 30,
-      start: 0,
-    },
-    {
-      chapter_number: 1,
-      chapter_summary:
-        "The man discovers something exciting online and expresses his enthusiasm. This highlights the captivating nature of the internet and its ability to provide thrilling experiences.",
-      chapter_title: "Exciting Discoveries Online",
-      end: 45,
-      start: 30,
-    },
-    {
-      chapter_number: 2,
-      chapter_summary:
-        "This chapter focuses on the man's use of software to browse and interact with various websites, including the YouTube platform. It showcases his seamless interaction with textual content, buttons, and images.",
-      chapter_title: "Seamless Interaction with Online Platforms",
-      end: 60,
-      start: 45,
-    },
-    {
-      chapter_number: 3,
-      chapter_summary:
-        "In this final chapter, the video demonstrates a dynamic animated world where viewers can engage in interactive internet browsing. It showcases a range of scenes and characters, highlighting the capabilities of the platform and leaving us eager to embark on our own explorations.",
-      chapter_title: "Engaging with a Dynamic Animated World",
-      end: 75,
-      start: 60,
-    },
-  ];
+  // useEffect(() => {
+  //   if (!videoDetails) {
+  //     const videoID = "65ac419e4981af6e637c8e7c";
+  //     const indexID = "65a91ba0627beda40b8df9b1";
+  //     console.log("Fetching video details...");
+  //     setVideoLoading(true);
+  //     getVideo(indexID, videoID)
+  //       .then((video) => {
+  //         setVideoDetails(video);
+  //       })
+  //       .catch((error) => console.error("Error fetching video details:", error))
+  //       .finally(() => setVideoLoading(false));
+  //   }
+  // }, []);
 
-  const highlights: Highlight[] = [
-    {
-      end: 15,
-      highlight:
-        "A man in black attire uses a laptop to browse various websites.",
-      highlight_summary:
-        "The video showcases a man using a laptop to browse different websites.",
-      start: 0,
-    },
-    {
-      end: 30,
-      highlight:
-        "The situation in the video is an instructional tutorial for interactive internet browsing using software tools such as VPNs and Tailwagging.",
-      highlight_summary:
-        "The video demonstrates an instructional tutorial for interactive internet browsing with software tools like VPNs and Tailwagging.",
-      start: 15,
-    },
-    {
-      end: 45,
-      highlight:
-        "A person discovers something exciting online and expresses their enthusiasm.",
-      highlight_summary:
-        "A person discovers something exciting online and expresses their enthusiasm.",
-      start: 30,
-    },
-  ];
+  useEffect(() => {
+    if (videoDetails) {
+      generateGist(videoDetails._id)
+        .then((gist) => {
+          setGistResponse(gist);
+        })
+        .catch((error) => console.error("Error fetching gist details:", error));
+      generateSummary(videoDetails._id)
+        .then((summary) => {
+          setSummaryResponse(summary);
+        })
+        .catch((error) =>
+          console.error("Error fetching summary details:", error)
+        );
+      generateChapter(videoDetails._id)
+        .then((chapter) => {
+          setChapterResponse(chapter);
+        })
+        .catch((error) =>
+          console.error("Error fetching chapter details:", error)
+        );
+      generateHighlight(videoDetails._id)
+        .then((highlight) => {
+          setHighlightResponse(highlight);
+        })
+        .catch((error) =>
+          console.error("Error fetching highlight details:", error)
+        );
+    }
+  }, [videoDetails]);
+
+  const handleVideoReady = (videoDetails: Video) => {
+    setVideoDetails(videoDetails);
+  };
 
   const seekToTime = (time: number) => {
     if (playerRef.current) {
@@ -79,94 +88,115 @@ export default function Home() {
     }
   };
 
+  if (videoLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Image src={HorseLoading} alt="Loading" />
+      </div>
+    );
+  }
+
+  if (!videoDetails) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-24 space-y-4">
+        <div className="flex flex-col items-center justify-center w-3/4  mx-auto">
+          <InputFile
+            onVideoReady={handleVideoReady}
+            setLoading={setVideoLoading}
+          />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-start justify-center p-24 space-y-4">
-      <div className="flex flex-col items-center justify-center w-3/4  mx-auto">
-        <InputFile />
-      </div>
-
       <div className="player-wrapper w-3/4 flex justify-center mx-auto">
         <ReactPlayer
           ref={playerRef}
-          url={videoUrl}
+          url={videoDetails.hls.video_url}
           playing={true}
           controls={true}
           width="100%"
           height="100%"
         />
       </div>
-
-      <h1 className="text-3xl font-bold text-left mb-6 w-3/4  mx-auto">
-        Exploring the World of Interactive Internet Browsing: A Guide to VPNs,
-        Tailwagging, and Exciting Discoveries
-      </h1>
-
-      <div className="hashtags flex flex-wrap justify-left mb-6 w-3/4  mx-auto">
-        {[
-          "man in black attire",
-          "laptop",
-          "browse",
-          "websites",
-          "instructional tutorial",
-          "interactive internet browsing",
-          "software tools",
-          "VPNs",
-          "Tailwagging",
-          "exciting online",
-        ].map((hashtag, index) => (
-          <span
-            key={index}
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-primary"
-          >
-            #{hashtag}
-          </span>
-        ))}
+      <div>
+        {gistResponse && (
+          <>
+            <h1 className="text-3xl font-bold text-left mb-6 w-3/4  mx-auto">
+              {gistResponse.title}
+            </h1>
+            <div className="topics flex flex-wrap justify-left mb-6 w-3/4  mx-auto">
+              {gistResponse.topics.map((topic, index) => (
+                <span key={index}>{topic}</span>
+              ))}
+            </div>
+            <div className="hashtags flex flex-wrap justify-left w-3/4  mx-auto">
+              {gistResponse.hashtags.map((hashtag, index) => (
+                <span
+                  key={index}
+                  className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-primary"
+                >
+                  #{hashtag}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-
-      <p className="text-left mb-6 w-3/4  mx-auto">
-        In this captivating video, we follow a man dressed in black as he delves
-        into the mesmerizing world of interactive internet browsing...
-      </p>
-
-      <div className="chapters w-3/4 mb-6  mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
-        {chapters.map((chapter, index) => (
-          <div
-            key={index}
-            className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
-            onClick={() => seekToTime(chapter.start)}
-          >
-            <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
-            <h3 className="text-lg font-bold"></h3>
-            <p className="text-sm text-gray-600">
-              Chapter {chapter.chapter_number} -
-              {secondsToTimestamp(chapter.start)} to
-              {secondsToTimestamp(chapter.end)}
-            </p>
-            <p>{chapter.chapter_summary}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="highlights w-3/4 mb-6  mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
-        {highlights.map((highlight, index) => (
-          <div
-            key={index}
-            className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
-            onClick={() => seekToTime(highlight.start)}
-          >
-            <p className="text-lg text-gray-900">{highlight.highlight}</p>
-            <p className="text-sm text-gray-600">
-              {secondsToTimestamp(highlight.start)} to
-              {secondsToTimestamp(highlight.end)}
-            </p>
-            <p className="text-sm text-gray-600">
-              {highlight.highlight_summary}
-            </p>
-          </div>
-        ))}
-      </div>
+      {summaryResponse ? (
+        <p className="text-left mb-6 w-3/4  mx-auto">
+          {summaryResponse.summary}
+        </p>
+      ) : (
+        <TextSkeleton />
+      )}
+      {chapterResponse ? (
+        <div className="chapters w-3/4 mb-6  mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
+          {chapterResponse.chapters.map((chapter, index) => (
+            <div
+              key={index}
+              className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
+              onClick={() => seekToTime(chapter.start)}
+            >
+              <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
+              <p className="text-sm text-gray-600">
+                Chapter {chapter.chapter_number} -
+                {secondsToTimestamp(chapter.start)} to{" "}
+                {secondsToTimestamp(chapter.end)}
+              </p>
+              <p>{chapter.chapter_summary}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <TextSkeleton />
+      )}
+      {highlightResponse ? (
+        <div className="highlights w-3/4 mb-6  mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
+          {highlightResponse.highlights.map((highlight, index) => (
+            <div
+              key={index}
+              className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
+              onClick={() => seekToTime(highlight.start)}
+            >
+              <h3 className="text-lg font-bold ">{highlight.highlight}</h3>
+              <p className="text-sm text-gray-600">
+                {secondsToTimestamp(highlight.start)} to{" "}
+                {secondsToTimestamp(highlight.end)}
+              </p>
+              <p className="text-sm text-gray-600">
+                {highlight.highlight_summary}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <TextSkeleton />
+      )}
     </main>
   );
 }

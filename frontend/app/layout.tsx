@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TwelveLabs Take Home",
-  description: "TwelveLabs Take Home by Advait Paliwal",
+  title: "Twelve Labs Take Home",
+  description: "Twelve Labs Take Home by Advait Paliwal",
 };
 
 export default function RootLayout({

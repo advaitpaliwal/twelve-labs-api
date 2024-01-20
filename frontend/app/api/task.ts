@@ -1,22 +1,14 @@
+import { Task } from "@/types/task";
+
 const TASK_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/task`;
 
 
-export const uploadVideo = async (index_id: string, language: string, file: File): Promise<any> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('index_id', index_id);
-    formData.append('language', language);
-
-    const requestOptions = {
-        method: 'POST',
-        body: formData,
-    };
-
+export const checkTaskStatus = async (task_id: string): Promise<Task> => {
     try {
-        const response = await fetch(`${TASK_API_URL}/upload_video`, requestOptions);
+        const response = await fetch(`${TASK_API_URL}/check_status/${task_id}`);
         return await response.json();
     } catch (error) {
-        console.error('Error while uploading the video:', error);
+        console.error('Error while checking the video status:', error);
         throw error; 
     }
-};
+}

@@ -1,26 +1,43 @@
 from fastapi import APIRouter, HTTPException
 from service import TwelveLabsService
-from models.generate_request import GenerateRequest
+from models.generate_model import GenerateRequest, GistResponse, SummaryResponse, ChapterResponse, HighlightResponse, CustomResponse
 
 router = APIRouter()
 service = TwelveLabsService()
 
-@router.post("/generate/")
-async def generate_content(request: GenerateRequest):
+@router.post("/gist")
+async def generate_gist_content(request: GenerateRequest) -> GistResponse:
     try:
-        if request.type == "gist":
-            return service.generate_gist(request.video_id)
-        elif request.type == "summary":
-            return service.generate_summary(request.video_id, request.prompt)
-        elif request.type == "chapter":
-            return service.generate_chapter(request.video_id, request.prompt)
-        elif request.type == "highlight":
-            return service.generate_highlight(request.video_id, request.prompt)
-        elif request.type == "generate":
-            if not request.prompt:
-                raise HTTPException(status_code=400, detail="Prompt is required for content generation.")
-            return service.generate(request.video_id, request.prompt)
-        else:
-            raise HTTPException(status_code=400, detail=f"Content type '{request.type}' is not supported.")
+        return service.generate_gist(request.video_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/summary")
+async def generate_summary_content(request: GenerateRequest) -> SummaryResponse:
+    try:
+        return service.generate_summary(request.video_id, request.prompt)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/chapter")
+async def generate_chapter_content(request: GenerateRequest) -> ChapterResponse:
+    try:
+        return service.generate_chapter(request.video_id, request.prompt)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/highlight")
+async def generate_highlight_content(request: GenerateRequest) -> HighlightResponse:
+    try:
+        return service.generate_highlight(request.video_id, request.prompt)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/custom")
+async def generate_custom_content(request: GenerateRequest) -> CustomResponse:
+    try:
+        if not request.prompt:
+            raise HTTPException(status_code=400, detail="Prompt is required for content generation.")
+        return service.generate(request.video_id, request.prompt)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
