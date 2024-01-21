@@ -16,7 +16,6 @@ import { getVideo } from "@/app/api/video";
 import { TextSkeleton } from "@/components/ui/textSkeleton";
 import Image from "next/image";
 import HorseLoading from "@/public/horse_loading.gif";
-import TwelveLabsLogo from "@/public/twelve_labs_logo.png";
 import {
   generateGist,
   generateSummary,
@@ -35,20 +34,20 @@ export default function Home() {
     useState<HighlightResponse>();
   const playerRef = useRef<ReactPlayer>(null);
 
-  useEffect(() => {
-    if (!videoDetails) {
-      const videoID = "65ac4f634981af6e637c8e7f";
-      const indexID = "65a91ba0627beda40b8df9b1";
-      console.log("Fetching video details...");
-      setVideoLoading(true);
-      getVideo(indexID, videoID)
-        .then((video) => {
-          setVideoDetails(video);
-        })
-        .catch((error) => console.error("Error fetching video details:", error))
-        .finally(() => setVideoLoading(false));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!videoDetails) {
+  //     const videoID = "65ac4f634981af6e637c8e7f";
+  //     const indexID = "65a91ba0627beda40b8df9b1";
+  //     console.log("Fetching video details...");
+  //     setVideoLoading(true);
+  //     getVideo(indexID, videoID)
+  //       .then((video) => {
+  //         setVideoDetails(video);
+  //       })
+  //       .catch((error) => console.error("Error fetching video details:", error))
+  //       .finally(() => setVideoLoading(false));
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (videoDetails) {
@@ -96,7 +95,12 @@ export default function Home() {
   if (videoLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Image src={HorseLoading} alt="Loading" />
+        <div className="flex flex-col justify-center items-center">
+          <Image src={HorseLoading} alt="Loading" />
+          <p className="text-sm text-center text-gray-600 mt-2">
+            Generating... This may take a while
+          </p>
+        </div>
       </div>
     );
   }
