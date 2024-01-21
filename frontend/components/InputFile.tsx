@@ -51,9 +51,6 @@ export function InputFile() {
       try {
         const taskStatus = await checkTaskStatus(taskId);
         if (taskStatus.status === "ready") {
-          toast({
-            title: "Your video is ready!",
-          });
           clearInterval(intervalId);
           router.push(`/video/${taskStatus.video_id}`);
           setTaskLoading(false);
