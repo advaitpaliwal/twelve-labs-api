@@ -11,17 +11,20 @@ import {
   ChapterResponse,
   HighlightResponse,
 } from "@/types/generate";
+import Draggable from "react-draggable";
 import { getVideo } from "@/app/api/video";
 import { TextSkeleton } from "@/components/ui/textSkeleton";
 import Image from "next/image";
 import HorseLoading from "@/public/horse_loading.gif";
+import TwelveLabsLogo from "@/public/twelve_labs_logo.png";
 import {
   generateGist,
   generateSummary,
   generateChapter,
   generateHighlight,
 } from "@/app/api/generate";
-import Draggable from "react-draggable";
+import { Video as VideoIcon } from "lucide-react";
+
 export default function Home() {
   const [videoDetails, setVideoDetails] = useState<Video>();
   const [videoLoading, setVideoLoading] = useState(false);
@@ -79,6 +82,8 @@ export default function Home() {
   }, [videoDetails]);
 
   const handleVideoReady = (videoDetails: Video) => {
+    console.log("Video ready!");
+    console.log(videoDetails);
     setVideoDetails(videoDetails);
   };
 
@@ -110,93 +115,105 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col justify-center space-y-4 ">
-      <div className="player-wrapper flex justify-center items-start mx-auto mt-6 w-3/4">
-        <ReactPlayer
-          ref={playerRef}
-          url={videoDetails.hls.video_url}
-          playing={true}
-          controls={true}
-          width="100%"
-          height="100%"
-        />
-      </div>
-      <div>
-        {gistResponse ? (
-          <div className="gist w-3/4 mb-6 mx-auto">
-            <h1 className="text-3xl font-bold mb-6 ">{gistResponse.title}</h1>
-            <div className="topics flex flex-wrap justify-left mb-6 ">
-              {gistResponse.topics.map((topic, index) => (
-                <span key={index}>{topic}</span>
-              ))}
+    <>
+      <Draggable>
+        <div className="fixed top-5 right-5 z-10 h-1/5">
+          <ReactPlayer
+            ref={playerRef}
+            url={videoDetails.hls.video_url}
+            playing={true}
+            controls={true}
+            width="100%"
+            height="100%"
+          />
+        </div>
+      </Draggable>
+      <main className="flex min-h-screen flex-col justify-center space-y-4 pt-20 pb-10">
+        <div>
+          {gistResponse ? (
+            <div className="gist w-3/4 mx-auto">
+              <h1 className="text-3xl font-bold mb-6 ">{gistResponse.title}</h1>
+              <p className="text-sm text-gray-600 mb-6 flex items-center">
+                <VideoIcon size={16} className="mr-2" />
+                {videoDetails.metadata.filename}
+              </p>
+              <h3 className="text-2xl font-bold mb-4 text-left ">Topic</h3>
+              <div className="topics flex flex-wrap justify-left mb-6 ">
+                {gistResponse.topics.map((topic, index) => (
+                  <span key={index}>{topic}</span>
+                ))}
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-left ">Hashtags</h3>
+              <div className="hashtags flex flex-wrap justify-left">
+                {gistResponse.hashtags.map((hashtag, index) => (
+                  <span
+                    key={index}
+                    className="inline-block outline outline-2 outline-primary rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-primary"
+                  >
+                    #{hashtag}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="hashtags flex flex-wrap justify-left">
-              {gistResponse.hashtags.map((hashtag, index) => (
-                <span
-                  key={index}
-                  className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-primary"
-                >
-                  #{hashtag}
-                </span>
-              ))}
-            </div>
+          ) : (
+            <TextSkeleton />
+          )}
+        </div>
+
+        {summaryResponse ? (
+          <div className="text-left summary w-3/4 mb-6 mx-auto">
+            <h3 className="text-2xl font-bold mb-4  ">Summary</h3>
+            <p>{summaryResponse.summary}</p>
           </div>
         ) : (
           <TextSkeleton />
         )}
-      </div>
-      {summaryResponse ? (
-        <p className="text-left mb-6 w-3/4 mx-auto">
-          {summaryResponse.summary}
-        </p>
-      ) : (
-        <TextSkeleton />
-      )}
-      {chapterResponse ? (
-        <div className="chapters w-3/4 mb-6 mx-auto">
-          <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
-          {chapterResponse.chapters.map((chapter, index) => (
-            <div
-              key={index}
-              className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
-              onClick={() => seekToTime(chapter.start)}
-            >
-              <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
-              <p className="text-sm text-gray-600">
-                Chapter {chapter.chapter_number} -
-                {secondsToTimestamp(chapter.start)} to{" "}
-                {secondsToTimestamp(chapter.end)}
-              </p>
-              <p>{chapter.chapter_summary}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <TextSkeleton />
-      )}
-      {highlightResponse ? (
-        <div className="highlights w-3/4 mb-6 mx-auto">
-          <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
-          {highlightResponse.highlights.map((highlight, index) => (
-            <div
-              key={index}
-              className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
-              onClick={() => seekToTime(highlight.start)}
-            >
-              <h3 className="text-lg font-bold ">{highlight.highlight}</h3>
-              <p className="text-sm text-gray-600">
-                {secondsToTimestamp(highlight.start)} to{" "}
-                {secondsToTimestamp(highlight.end)}
-              </p>
-              <p className="text-sm text-gray-600">
-                {highlight.highlight_summary}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <TextSkeleton />
-      )}
-    </main>
+        {highlightResponse ? (
+          <div className="highlights w-3/4 mb-6 mx-auto">
+            <h2 className="text-2xl font-bold mb-4 text-left">Highlights</h2>
+            {highlightResponse.highlights.map((highlight, index) => (
+              <div
+                key={index}
+                className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
+                onClick={() => seekToTime(highlight.start)}
+              >
+                <h3 className="text-lg font-bold ">{highlight.highlight}</h3>
+                <p className="text-sm text-gray-600">
+                  {secondsToTimestamp(highlight.start)} to{" "}
+                  {secondsToTimestamp(highlight.end)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {highlight.highlight_summary}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <TextSkeleton />
+        )}
+        {chapterResponse ? (
+          <div className="chapters w-3/4 mb-6 mx-auto">
+            <h2 className="text-2xl font-bold mb-4 text-left ">Chapters</h2>
+            {chapterResponse.chapters.map((chapter, index) => (
+              <div
+                key={index}
+                className="mb-4 p-4 border-l-4 border-primary space-y-2 text-left hover:bg-primary cursor-pointer"
+                onClick={() => seekToTime(chapter.start)}
+              >
+                <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
+                <p className="text-sm text-gray-600">
+                  Chapter {chapter.chapter_number} -
+                  {secondsToTimestamp(chapter.start)} to{" "}
+                  {secondsToTimestamp(chapter.end)}
+                </p>
+                <p>{chapter.chapter_summary}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <TextSkeleton />
+        )}
+      </main>
+    </>
   );
 }
