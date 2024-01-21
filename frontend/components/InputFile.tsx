@@ -13,9 +13,10 @@ import { useRouter } from "next/navigation";
 import HorseLoading from "@/public/horse_loading.gif";
 import Image from "next/image";
 import { Fact } from "@/types/fact";
+
 export function InputFile() {
   const [uploading, setUploading] = useState(false);
-  const [taskLoading, setTaskLoading] = useState(false);
+  const [taskLoading, setTaskLoading] = useState(true);
   const [fact, setFact] = useState<Fact>();
 
   const router = useRouter();
@@ -68,11 +69,11 @@ export function InputFile() {
 
   if (taskLoading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-primary">
+      <div className="flex justify-center items-center bg-primary">
         <div className="flex flex-col justify-center items-center">
           <Image src={HorseLoading} alt="Horse Loading" />
           <p className="text-sm text-center text-gray-600 mt-2">
-            Generating... This may take a while
+            Generating... This may take a while.
           </p>
           {fact && (
             <p className="text-sm text-center text-gray-600 mt-2">
