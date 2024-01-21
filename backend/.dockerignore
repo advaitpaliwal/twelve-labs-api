@@ -1,0 +1,23 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+# env
+venv
+ENV
+env.bak
+venv.bak
+.dockerignore
+Dockerfile
+.git
+.gitignore
+README.md
+LICENSE
+docs
+tests
+*.yml
+*.yaml
+*.json
+*.lock
+pip-log.txt
