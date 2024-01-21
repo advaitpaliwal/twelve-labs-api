@@ -1,3 +1,7 @@
 # Twelve Labs Take Home
 
-cd to this directory and run both `run_backend.sh` and `run_frontend.sh` in separate terminals.
+1. Add your Twelve Labs `API_KEY` and `API_URL` in `backend/.env` using the `backend/.env.template`.
+2. Add `NEXT_PUBLIC_API_URL=http://localhost:8000` to `frontend/.env.local`.
+3. Open Docker
+4. cd to the root directory and run `docker-compose up --build`.
+5. The website will be running at `http://localhost:3000`

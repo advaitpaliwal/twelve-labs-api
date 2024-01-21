@@ -68,7 +68,7 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
   };
 
   return (
-    <div className="grid max-w-sm gap-1.5 items-center px-4 py-3 border border-dashed border-black bg-white rounded-lg hover:border-solid hover:border-black transition duration-300 ease-in-out">
+    <div className="grid max-w-sm gap-1.5 items-center px-4 py-3 border border-dashed border-black bg-white rounded-lg hover:border-solid hover:border-black">
       <Label htmlFor="video-file" className="mb-2 text-lg font-medium">
         Upload a video
       </Label>
@@ -76,7 +76,7 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
         id="video-file"
         type="file"
         accept=".mp4"
-        className="block text-sm justify-left bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none focus:border-black focus:ring-2 focus:ring-black"
+        className="block text-sm justify-left bg-gray-50 rounded-lg border  cursor-pointer "
         onChange={handleFileChange}
         disabled={uploading}
       />
