@@ -10,19 +10,25 @@ import {
   SummaryResponse,
   ChapterResponse,
   HighlightResponse,
+  CustomResponse,
 } from "@/types/generate";
 import Draggable from "react-draggable";
 import { getVideo } from "@/app/api/video";
 import { TextSkeleton } from "@/components/ui/textSkeleton";
 import Image from "next/image";
 import HorseLoading from "@/public/horse_loading.gif";
+import GreenHorseLoading from "@/public/green_horse_loading.gif";
+import { PlayCircle } from "lucide-react";
 import {
   generateGist,
   generateSummary,
   generateChapter,
   generateHighlight,
+  generateCustom,
 } from "@/app/api/generate";
 import { Video as VideoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [videoDetails, setVideoDetails] = useState<Video>();
@@ -30,6 +36,10 @@ export default function Home() {
   const [gistResponse, setGistResponse] = useState<GistResponse>();
   const [summaryResponse, setSummaryResponse] = useState<SummaryResponse>();
   const [chapterResponse, setChapterResponse] = useState<ChapterResponse>();
+  const [customResponse, setCustomResponse] = useState<CustomResponse>();
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [customLoading, setCustomLoading] = useState(false);
+
   const [highlightResponse, setHighlightResponse] =
     useState<HighlightResponse>();
   const playerRef = useRef<ReactPlayer>(null);
@@ -86,6 +96,24 @@ export default function Home() {
     setVideoDetails(videoDetails);
   };
 
+  const handleCustomPromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomPrompt(e.target.value);
+  };
+
+  const handleCustomSubmit = () => {
+    if (videoDetails && customPrompt) {
+      setCustomLoading(true);
+      generateCustom(videoDetails._id, customPrompt)
+        .then((custom) => {
+          setCustomResponse(custom);
+        })
+        .catch((error) =>
+          console.error("Error fetching custom details:", error)
+        )
+        .finally(() => setCustomLoading(false));
+    }
+  };
+
   const seekToTime = (time: number) => {
     if (playerRef.current) {
       playerRef.current.seekTo(time, "seconds");
@@ -96,7 +124,7 @@ export default function Home() {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="flex flex-col justify-center items-center">
-          <Image src={HorseLoading} alt="Loading" />
+          <Image src={HorseLoading} alt="Horse Loading" />
           <p className="text-sm text-center text-gray-600 mt-2">
             Generating... This may take a while
           </p>
@@ -121,7 +149,7 @@ export default function Home() {
   return (
     <>
       <Draggable>
-        <div className="fixed top-5 right-5 z-10 h-1/5">
+        <div className="fixed bottom-5 right-5 z-10 h-1/5">
           <ReactPlayer
             ref={playerRef}
             url={videoDetails.hls.video_url}
@@ -182,8 +210,9 @@ export default function Home() {
                 onClick={() => seekToTime(highlight.start)}
               >
                 <h3 className="text-lg font-bold ">{highlight.highlight}</h3>
-                <p className="text-sm text-gray-600">
-                  {secondsToTimestamp(highlight.start)} to{" "}
+                <p className="text-sm text-gray-600 flex items-center">
+                  <PlayCircle size={16} className="mr-2" />
+                  {secondsToTimestamp(highlight.start)} -{" "}
                   {secondsToTimestamp(highlight.end)}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -205,9 +234,9 @@ export default function Home() {
                 onClick={() => seekToTime(chapter.start)}
               >
                 <h3 className="text-lg font-bold ">{chapter.chapter_title}</h3>
-                <p className="text-sm text-gray-600">
-                  Chapter {chapter.chapter_number} -
-                  {secondsToTimestamp(chapter.start)} to{" "}
+                <p className="text-sm text-gray-600 flex items-center">
+                  <PlayCircle size={16} className="mr-2" />
+                  {secondsToTimestamp(chapter.start)} -{" "}
                   {secondsToTimestamp(chapter.end)}
                 </p>
                 <p>{chapter.chapter_summary}</p>
@@ -217,6 +246,43 @@ export default function Home() {
         ) : (
           <TextSkeleton />
         )}
+        <div className="custom w-3/4 mb-6 mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-left ">Custom</h2>
+          <div className="mt-2 mb-4">
+            <Input
+              value={customPrompt}
+              onChange={handleCustomPromptChange}
+              placeholder="Write your own prompt"
+              className="w-full px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent rounded-sm"
+            />
+          </div>
+          {customLoading ? (
+            <div className="flex justify-left items-center space-x-2">
+              <Image
+                src={GreenHorseLoading}
+                alt="Green Horse Loading"
+                width={65}
+                height={65}
+              />
+              <span className="text-sm text-gray-600">Generating...</span>{" "}
+            </div>
+          ) : (
+            <Button
+              onClick={handleCustomSubmit}
+              disabled={customLoading}
+              className="bg-primary font-semibold hover:bg-white outline outline-3 outline-primary rounded-sm"
+              size="sm"
+            >
+              Generate
+            </Button>
+          )}
+          {customResponse && !customLoading && (
+            <div className="mt-4 p-4 border border-primary rounded-sm">
+              <h3 className="text-lg font-bold mb-2">Response</h3>
+              <p>{customResponse.data}</p>{" "}
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

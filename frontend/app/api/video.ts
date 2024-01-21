@@ -23,6 +23,21 @@ export const uploadVideo = async (index_id: string, language: string, file: File
     }
 };
 
+export const addVideoUrl = async (index_id: string, url: string): Promise<any> => {
+    const data = {
+        index_id,
+        url
+    };
+
+    try {
+        const response = await fetch(`${VIDEO_API_URL}/url`, requestOptions(data));
+        return await response.json();
+    } catch (error) {
+        console.error('Error while adding the video url:', error);
+        throw error;
+    }
+}
+
 export const getVideo = async (index_id: string, video_id: string) : Promise<Video> => {
     try {
         const data = {

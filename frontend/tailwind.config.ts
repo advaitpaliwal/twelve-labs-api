@@ -21,12 +21,12 @@ const config = {
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        ring: "#B2F260",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#B2F260",
-          foreground: "hsl(var(--primary-foreground))",
+          foreground: "black",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

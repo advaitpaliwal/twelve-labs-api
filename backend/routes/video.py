@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
+from fastapi import APIRouter, HTTPException, File, UploadFile, Form
 from service import TwelveLabsService
-from models.video_model import VideoRequest, Video
+from models.video_model import VideoRequest, VideoUrlRequest, Video
 import os
 
 router = APIRouter()
@@ -17,12 +17,23 @@ async def upload_video(file: UploadFile = File(...), index_id: str = Form(...), 
         with open(file_location, "wb+") as file_object:
             file_content = await file.read()
             file_object.write(file_content)
-        response = service.upload_video(index_id, file.filename, file_location, language)
+        response = service.upload_video(
+            index_id, file.filename, file_location, language)
         return response
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
+@router.post("/url")
+async def add_video_url(request: VideoUrlRequest):
+    print(request.index_id)
+    print(request.url)
+    try:
+        return service.add_video_url(request.index_id, request.url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/info")
 async def get_video_info(request: VideoRequest) -> Video:
