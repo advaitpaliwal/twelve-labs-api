@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import index_router, task_router, generate_router, video_router
+from routes import index_router, task_router, generate_router, video_router, fact_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="TwelveLabs API")
@@ -15,9 +15,10 @@ app.add_middleware(
 
 app.include_router(index_router, prefix="/index", tags=["Index Management"])
 app.include_router(task_router, prefix="/task", tags=["Task Management"])
-app.include_router(generate_router, prefix="/generate", tags=["Content Generation"])
+app.include_router(generate_router, prefix="/generate",
+                   tags=["Content Generation"])
 app.include_router(video_router, prefix="/video", tags=["Video Management"])
-
+app.include_router(fact_router, prefix="/fact", tags=["Fact Management"])
 
 
 @app.get("/")

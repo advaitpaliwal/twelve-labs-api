@@ -1,23 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { uploadVideo } from "@/app/api/video";
-import { getOrCreateIndex } from "@/app/api";
+import { getOrCreateIndex } from "@/app/api/index";
+import { getRandomFact } from "@/app/api/fact";
 import { INDEX_NAME } from "@/lib/constants";
 import { checkTaskStatus } from "@/app/api/task";
-import { getVideo } from "@/app/api/video";
-import { Video } from "@/types/video";
 import { useToast } from "@/components/ui/use-toast";
-
-interface InputFileProps {
-  setVideoDetails: (videoDetails: Video) => void;
-  setLoading: (loading: boolean) => void;
-}
-
-export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
+import { useRouter } from "next/navigation";
+import HorseLoading from "@/public/horse_loading.gif";
+import Image from "next/image";
+import { Fact } from "@/types/fact";
+export function InputFile() {
   const [uploading, setUploading] = useState(false);
+  const [taskLoading, setTaskLoading] = useState(false);
+  const [fact, setFact] = useState<Fact>();
+
+  const router = useRouter();
   const { toast } = useToast();
 
   const handleFileChange = async (
@@ -44,7 +45,7 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
   };
 
   const checkTaskStatusPeriodically = async (taskId: string) => {
-    setLoading(true);
+    setTaskLoading(true);
     const intervalId = setInterval(async () => {
       try {
         const taskStatus = await checkTaskStatus(taskId);
@@ -53,19 +54,35 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
             title: "Your video is ready!",
           });
           clearInterval(intervalId);
-          const videoDetails = await getVideo(
-            taskStatus.index_id,
-            taskStatus.video_id
-          );
-          setVideoDetails(videoDetails);
-          setLoading(false);
+          router.push(`/video/${taskStatus.video_id}`);
+          setTaskLoading(false);
         }
+        const randomFact = await getRandomFact();
+        setFact(randomFact);
       } catch (error) {
         console.error("Error checking task status:", error);
         clearInterval(intervalId);
       }
-    }, 15000);
+    }, 10000);
   };
+
+  if (taskLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-primary">
+        <div className="flex flex-col justify-center items-center">
+          <Image src={HorseLoading} alt="Horse Loading" />
+          <p className="text-sm text-center text-gray-600 mt-2">
+            Generating... This may take a while
+          </p>
+          {fact && (
+            <p className="text-sm text-center text-gray-600 mt-2">
+              Did you know? {fact.data}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid max-w-sm gap-1.5 items-center px-4 py-3 border border-dashed border-black bg-white rounded-lg hover:border-solid hover:border-black">
