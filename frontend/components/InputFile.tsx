@@ -9,6 +9,7 @@ import { INDEX_NAME } from "@/lib/constants";
 import { checkTaskStatus } from "@/app/api/task";
 import { getVideo } from "@/app/api/video";
 import { Video } from "@/types/video";
+import { useToast } from "@/components/ui/use-toast";
 
 interface InputFileProps {
   setVideoDetails: (videoDetails: Video) => void;
@@ -17,6 +18,7 @@ interface InputFileProps {
 
 export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -28,9 +30,14 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
       try {
         const index = await getOrCreateIndex(INDEX_NAME);
         const uploadResponse = await uploadVideo(index._id, "en", selectedFile);
+        setUploading(false);
         checkTaskStatusPeriodically(uploadResponse._id);
       } catch (error) {
         console.error("Upload failed:", error);
+        toast({
+          title: "Upload failed",
+          description: "Please try again later.",
+        });
         setUploading(false);
       }
     }
@@ -42,6 +49,9 @@ export function InputFile({ setVideoDetails, setLoading }: InputFileProps) {
       try {
         const taskStatus = await checkTaskStatus(taskId);
         if (taskStatus.status === "ready") {
+          toast({
+            title: "Your video is ready!",
+          });
           clearInterval(intervalId);
           const videoDetails = await getVideo(
             taskStatus.index_id,

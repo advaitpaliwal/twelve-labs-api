@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { InputFile } from "@/components/ui/upload";
+import { InputFile } from "@/components/InputFile";
 import ReactPlayer from "react-player";
 import { secondsToTimestamp } from "@/lib/utils";
 import { Video } from "@/types/video";
@@ -29,6 +29,7 @@ import {
 import { Video as VideoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [videoDetails, setVideoDetails] = useState<Video>();
@@ -39,25 +40,30 @@ export default function Home() {
   const [customResponse, setCustomResponse] = useState<CustomResponse>();
   const [customPrompt, setCustomPrompt] = useState("");
   const [customLoading, setCustomLoading] = useState(false);
-
+  const { toast } = useToast();
   const [highlightResponse, setHighlightResponse] =
     useState<HighlightResponse>();
   const playerRef = useRef<ReactPlayer>(null);
 
-  useEffect(() => {
-    if (!videoDetails) {
-      const videoID = "65ac4f634981af6e637c8e7f";
-      const indexID = "65a91ba0627beda40b8df9b1";
-      console.log("Fetching video details...");
-      setVideoLoading(true);
-      getVideo(indexID, videoID)
-        .then((video) => {
-          setVideoDetails(video);
-        })
-        .catch((error) => console.error("Error fetching video details:", error))
-        .finally(() => setVideoLoading(false));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!videoDetails) {
+  //     const videoID = "65ac4f634981af6e637c8e7f";
+  //     const indexID = "65a91ba0627beda40b8df9b1";
+  //     setVideoLoading(true);
+  //     getVideo(indexID, videoID)
+  //       .then((video) => {
+  //         setVideoDetails(video);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching video details:", error);
+  //         toast({
+  //           title: "Error",
+  //           description: "Error fetching video details",
+  //         });
+  //       })
+  //       .finally(() => setVideoLoading(false));
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (videoDetails) {
@@ -65,34 +71,50 @@ export default function Home() {
         .then((gist) => {
           setGistResponse(gist);
         })
-        .catch((error) => console.error("Error fetching gist details:", error));
+        .catch((error) => {
+          console.error("Error fetching gist details:", error);
+          toast({
+            title: "Error",
+            description: "Error generating gist",
+          });
+        });
       generateSummary(videoDetails._id)
         .then((summary) => {
           setSummaryResponse(summary);
         })
-        .catch((error) =>
-          console.error("Error fetching summary details:", error)
-        );
+        .catch((error) => {
+          console.error("Error fetching summary details:", error);
+          toast({
+            title: "Error",
+            description: "Error generating summary",
+          });
+        });
       generateHighlight(videoDetails._id)
         .then((highlight) => {
           setHighlightResponse(highlight);
         })
-        .catch((error) =>
-          console.error("Error fetching highlight details:", error)
-        );
+        .catch((error) => {
+          console.error("Error fetching highlight details:", error);
+          toast({
+            title: "Error",
+            description: "Error generating highlight",
+          });
+        });
       generateChapter(videoDetails._id)
         .then((chapter) => {
           setChapterResponse(chapter);
         })
-        .catch((error) =>
-          console.error("Error fetching chapter details:", error)
-        );
+        .catch((error) => {
+          console.error("Error fetching chapter details:", error);
+          toast({
+            title: "Error",
+            description: "Error generating chapter",
+          });
+        });
     }
   }, [videoDetails]);
 
   const handleVideoReady = (videoDetails: Video) => {
-    console.log("Video ready!");
-    console.log(videoDetails);
     setVideoDetails(videoDetails);
   };
 
