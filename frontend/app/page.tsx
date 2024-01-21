@@ -73,19 +73,19 @@ export default function Home() {
         .catch((error) =>
           console.error("Error fetching summary details:", error)
         );
-      generateChapter(videoDetails._id)
-        .then((chapter) => {
-          setChapterResponse(chapter);
-        })
-        .catch((error) =>
-          console.error("Error fetching chapter details:", error)
-        );
       generateHighlight(videoDetails._id)
         .then((highlight) => {
           setHighlightResponse(highlight);
         })
         .catch((error) =>
           console.error("Error fetching highlight details:", error)
+        );
+      generateChapter(videoDetails._id)
+        .then((chapter) => {
+          setChapterResponse(chapter);
+        })
+        .catch((error) =>
+          console.error("Error fetching chapter details:", error)
         );
     }
   }, [videoDetails]);
