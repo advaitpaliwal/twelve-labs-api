@@ -34,6 +34,7 @@ import { getOrCreateIndex } from "@/app/api/index";
 export default function VideoView({ params }: { params: { videoId: string } }) {
   const videoId = params.videoId;
   const [videoDetails, setVideoDetails] = useState<Video>();
+  const [isClient, setIsClient] = useState(false);
   const [gistResponse, setGistResponse] = useState<GistResponse>();
   const [summaryResponse, setSummaryResponse] = useState<SummaryResponse>();
   const [chapterResponse, setChapterResponse] = useState<ChapterResponse>();
@@ -46,6 +47,7 @@ export default function VideoView({ params }: { params: { videoId: string } }) {
   const playerRef = useRef<ReactPlayer>(null);
 
   useEffect(() => {
+    setIsClient(true);
     const fetchData = async () => {
       try {
         const index = await getOrCreateIndex(INDEX_NAME);
@@ -118,8 +120,15 @@ export default function VideoView({ params }: { params: { videoId: string } }) {
     setCustomPrompt(e.target.value);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleCustomSubmit();
+    }
+  };
+
   const handleCustomSubmit = () => {
-    if (videoDetails && customPrompt) {
+    if (videoDetails && customPrompt && !customLoading) {
       setCustomLoading(true);
       generateCustom(videoDetails._id, customPrompt)
         .then((custom) => {
@@ -142,14 +151,17 @@ export default function VideoView({ params }: { params: { videoId: string } }) {
     <>
       <Draggable>
         <div className="fixed bottom-5 right-5 z-10 h-1/5">
-          <ReactPlayer
-            ref={playerRef}
-            url={videoDetails?.hls?.video_url ?? ""}
-            playing={true}
-            controls={true}
-            width="100%"
-            height="100%"
-          />
+          {isClient && (
+            <ReactPlayer
+              ref={playerRef}
+              url={videoDetails?.hls?.video_url ?? ""}
+              playing={true}
+              controls={true}
+              width="100%"
+              height="100%"
+              muted={true}
+            />
+          )}
         </div>
       </Draggable>
       <main className="flex min-h-screen flex-col justify-center space-y-4 pt-20 pb-10">
@@ -249,11 +261,12 @@ export default function VideoView({ params }: { params: { videoId: string } }) {
               <Input
                 value={customPrompt}
                 onChange={handleCustomPromptChange}
+                onKeyDown={handleKeyPress}
                 placeholder="Write your own prompt"
                 className="w-full px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent rounded-sm"
               />
             </div>
-            {customLoading ? (
+            {customLoading && isClient ? (
               <div className="flex justify-left items-center space-x-2">
                 <Image
                   src={GreenHorseLoading}
