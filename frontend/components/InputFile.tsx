@@ -16,7 +16,7 @@ import { Fact } from "@/types/fact";
 
 export function InputFile() {
   const [uploading, setUploading] = useState(false);
-  const [taskLoading, setTaskLoading] = useState(true);
+  const [taskLoading, setTaskLoading] = useState(false);
   const [fact, setFact] = useState<Fact>();
 
   const router = useRouter();
