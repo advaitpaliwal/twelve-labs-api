@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   frontend:
+    image: twelvelabs-frontend
     build: ./frontend
     ports:
       - "3000:3000"
@@ -10,6 +11,7 @@ services:
       - /app/node_modules
     
   backend:
+    image: twelvelabs-backend
     build: ./backend
     ports:
       - "8000:8000"
