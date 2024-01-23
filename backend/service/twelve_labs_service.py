@@ -103,6 +103,8 @@ class TwelveLabsService:
         }
         if prompt:
             data['prompt'] = prompt
+        else:
+            data['prompt'] = "Generate a concise educational summary of the video in one paragraph."
         response = requests.post(
             self.SUMMARIZE_URL, headers=self.HEADERS, json=data)
         return response.json()
@@ -114,6 +116,8 @@ class TwelveLabsService:
         }
         if prompt:
             data['prompt'] = prompt
+        else:
+            data['prompt'] = "Generate chapters that outline the main educational points of the video in detail."
         response = requests.post(
             self.SUMMARIZE_URL, headers=self.HEADERS, json=data)
         return response.json()
@@ -125,6 +129,8 @@ class TwelveLabsService:
         }
         if prompt:
             data['prompt'] = prompt
+        else:
+            data['prompt'] = "Generate highlights to identify and describe the most informative moments of the video."
         response = requests.post(
             self.SUMMARIZE_URL, headers=self.HEADERS, json=data)
         return response.json()

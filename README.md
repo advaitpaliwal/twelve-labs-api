@@ -5,12 +5,3 @@
 3. Open Docker
 4. cd to the root directory and run `docker-compose up --build`.
 5. The website will be running at `http://localhost:3000`
-
-## Debugging
-
-```
-docker-compose down
-docker system prune -a -f
-docker-compose build --no-cache
-docker-compose up
-```
