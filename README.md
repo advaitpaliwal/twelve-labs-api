@@ -1,6 +1,6 @@
 # Twelve Labs Take Home
 
-https://drive.google.com/file/d/15ABaKqtvy93xZAUxzZ1tXgBsThxJMWLa/view
+![](assets/demo.mp4)
 
 ## Overview
 
@@ -64,3 +64,12 @@ I took an educational approach to the prompts to make sure the output is informa
 3. Open Docker
 4. cd to the root directory and run `docker-compose up --build`.
 5. The frontend will be running at `http://localhost:3000` and backend will be running at `http://localhost:8000`.
+
+### Restart Docker
+
+```
+docker-compose down
+docker system prune -a -f
+docker-compose build --no-cache
+docker-compose up
+```
