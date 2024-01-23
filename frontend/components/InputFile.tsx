@@ -55,12 +55,13 @@ export function InputFile() {
       try {
         const taskStatus = await checkTaskStatus(taskId);
         if (taskStatus.status === "ready") {
-          clearInterval(intervalId);
           router.push(`/video/${taskStatus.video_id}`);
+          clearInterval(intervalId);
           setTaskLoading(false);
+        } else {
+          const randomFact = await getRandomFact();
+          setFact(randomFact);
         }
-        const randomFact = await getRandomFact();
-        setFact(randomFact);
       } catch (error) {
         console.error("Error checking task status:", error);
         clearInterval(intervalId);
@@ -70,31 +71,31 @@ export function InputFile() {
 
   if (taskLoading) {
     return <LoadingDisplay fact={fact} />;
+  } else {
+    return (
+      <div className="grid max-w-sm gap-1.5 items-center px-4 py-3 border border-dashed border-black bg-white rounded-lg hover:border-solid hover:border-black">
+        <Label htmlFor="video-file" className="mb-2 text-lg font-medium">
+          Upload a video
+        </Label>
+        <Input
+          id="video-file"
+          type="file"
+          accept=".mp4"
+          className="block text-sm justify-left bg-gray-50 rounded-lg border  cursor-pointer "
+          onChange={handleFileChange}
+          disabled={uploading}
+        />
+        <Button
+          onClick={handleUpload}
+          disabled={uploading || !selectedFile}
+          className="bg-primary font-semibold hover:bg-white outline outline-3 outline-primary rounded-sm"
+          size="sm"
+        >
+          {uploading ? "Uploading..." : "Upload"}
+        </Button>
+
+        <p className="text-xs text-gray-500 mt-1">MP4 only</p>
+      </div>
+    );
   }
-
-  return (
-    <div className="grid max-w-sm gap-1.5 items-center px-4 py-3 border border-dashed border-black bg-white rounded-lg hover:border-solid hover:border-black">
-      <Label htmlFor="video-file" className="mb-2 text-lg font-medium">
-        Upload a video
-      </Label>
-      <Input
-        id="video-file"
-        type="file"
-        accept=".mp4"
-        className="block text-sm justify-left bg-gray-50 rounded-lg border  cursor-pointer "
-        onChange={handleFileChange}
-        disabled={uploading}
-      />
-      <Button
-        onClick={handleUpload}
-        disabled={uploading || !selectedFile}
-        className="bg-primary font-semibold hover:bg-white outline outline-3 outline-primary rounded-sm"
-        size="sm"
-      >
-        {uploading ? "Uploading..." : "Upload"}
-      </Button>
-
-      <p className="text-xs text-gray-500 mt-1">MP4 only</p>
-    </div>
-  );
 }
