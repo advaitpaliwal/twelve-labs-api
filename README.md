@@ -4,7 +4,7 @@
 
 ## Overview
 
-This application offers an interface for uploading videos and generating summaries, highlights, chapters, and more by the Twelve Labs API and Pegasus-1 model.
+An interface for uploading videos and generating summaries, highlights, chapters, and more by the Twelve Labs API and Pegasus-1 model.
 
 ## Initial sketch
 
