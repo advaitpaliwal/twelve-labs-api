@@ -13,22 +13,27 @@ import { useRouter } from "next/navigation";
 import HorseLoading from "@/public/horse_loading.gif";
 import Image from "next/image";
 import { Fact } from "@/types/fact";
+import { Button } from "@/components/ui/button";
 
 export function InputFile() {
   const [uploading, setUploading] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File>();
   const [fact, setFact] = useState<Fact>();
 
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const selectedFile = event.target.files[0];
-      setUploading(true);
+      const file = event.target.files[0];
+      setSelectedFile(file); // Store the file
+    }
+  };
 
+  const handleUpload = async () => {
+    if (selectedFile) {
+      setUploading(true);
       try {
         const index = await getOrCreateIndex(INDEX_NAME);
         const uploadResponse = await uploadVideo(index._id, "en", selectedFile);
@@ -95,9 +100,16 @@ export function InputFile() {
         onChange={handleFileChange}
         disabled={uploading}
       />
-      <p className="text-xs text-gray-500 mt-1">
-        {uploading ? "Uploading..." : "MP4 only"}
-      </p>
+      <Button
+        onClick={handleUpload}
+        disabled={uploading || !selectedFile}
+        className="bg-primary font-semibold hover:bg-white outline outline-3 outline-primary rounded-sm"
+        size="sm"
+      >
+        {uploading ? "Uploading..." : "Upload"}
+      </Button>
+
+      <p className="text-xs text-gray-500 mt-1">MP4 only</p>
     </div>
   );
 }
