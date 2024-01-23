@@ -10,10 +10,9 @@ import { INDEX_NAME } from "@/lib/constants";
 import { checkTaskStatus } from "@/app/api/task";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import HorseLoading from "@/public/horse_loading.gif";
-import Image from "next/image";
 import { Fact } from "@/types/fact";
 import { Button } from "@/components/ui/button";
+import { LoadingDisplay } from "./LoadingDisplay";
 
 export function InputFile() {
   const [uploading, setUploading] = useState(false);
@@ -27,7 +26,7 @@ export function InputFile() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setSelectedFile(file); // Store the file
+      setSelectedFile(file);
     }
   };
 
@@ -70,21 +69,7 @@ export function InputFile() {
   };
 
   if (taskLoading) {
-    return (
-      <div className="flex justify-center items-center bg-primary">
-        <div className="flex flex-col justify-center items-center">
-          <Image src={HorseLoading} alt="Horse Loading" />
-          <p className="text-sm text-center text-gray-600 mt-2">
-            Generating... This may take a while.
-          </p>
-          {fact && (
-            <p className="text-sm text-center text-gray-600 mt-2">
-              Did you know? {fact.data}
-            </p>
-          )}
-        </div>
-      </div>
-    );
+    return <LoadingDisplay fact={fact} />;
   }
 
   return (
