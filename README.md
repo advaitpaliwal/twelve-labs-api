@@ -1,6 +1,6 @@
 # Twelve Labs Take Home
 
-![](assets/demo.mp4)
+![](assets/demo.gif)
 
 ## Overview
 
