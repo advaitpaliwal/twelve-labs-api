@@ -1,1 +1,1 @@
-export const INDEX_NAME="takehome"
+export const INDEX_NAME="test"

@@ -148,7 +148,7 @@ class TwelveLabsService:
 if __name__ == "__main__":
     import time
     service = TwelveLabsService()
-    index = service.get_or_create_index("takehome")
+    index = service.get_or_create_index("test")
     index_id = index.get('_id')
     all_tasks = service.list_tasks()
     path_to_video = "example.mp4"
