@@ -1,4 +1,4 @@
-# Twelve Labs API
+# Twelve Labs Generations
 
 ![](assets/demo.gif)
 
