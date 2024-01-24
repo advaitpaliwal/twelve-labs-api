@@ -26,6 +26,13 @@ export function InputFile() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
+      if (file.size > 2000000000) {
+        toast({
+          title: "File too large",
+          description: "Please upload a file smaller than 2GB.",
+        });
+        return;
+      }
       setSelectedFile(file);
     }
   };
