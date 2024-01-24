@@ -25,8 +25,8 @@ An interface for uploading videos and generating summaries, highlights, chapters
 ### Backend
 
 - Initially, I wrote a basic script to execute functions using the Twelve Labs API.
-- After ensuring its functionality, I refined the script, adopting an OOP structure.
-- With my experience in FastAPI, I chose it for server-side requests.
+- After understanding its functionality, I refined the script using an OOP structure.
+- I chose FastAPI for backend/server-side requests.
 - Following that, I developed Pydantic models to structure the output data.
 
 ### Frontend
@@ -40,6 +40,7 @@ An interface for uploading videos and generating summaries, highlights, chapters
 ### Docker
 
 - I combined the backend and the frontend dockers using docker compose.
+- I initially had troubles with the Docker not being able to run both and communicate, but with enough trial and error, I managed to fix it.
 
 ## Prompts used
 
