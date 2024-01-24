@@ -1,4 +1,4 @@
-# Twelve Labs Take Home
+# Twelve Labs API
 
 ![](assets/demo.gif)
 
